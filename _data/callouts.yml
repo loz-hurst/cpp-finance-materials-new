@@ -1,2 +1,5 @@
 technical: '<div class="technical">'
+terminology: '<div class="terminology">'
+philosophy: '<div class="philosophy">'
+bad_practice: '<div class="bad_practice">'
 end: '</div>'
