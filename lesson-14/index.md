@@ -5,6 +5,13 @@
   border-bottom: 1px solid silver;
   padding-left: 3px;
 }
+.callout .technical {
+  border-left-color: darkslategray;
+}
+.callout .technical::before {
+  content: "&#x2699;";
+}
+
 </style>
 
 # Lesson 14 - Dynamic Polymorphism
