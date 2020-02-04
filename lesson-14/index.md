@@ -15,7 +15,19 @@
   border-left-color: darkkhaki;
 }
 .callout.terminology::before {
-  content: "\1f4da";
+  content: "\1f56e";
+}
+.callout.philosophy {
+  border-left-color: aquamarine;
+}
+.callout.philosophy::before {
+  content: "\1f4ad";
+}
+.callout.bad_practice {
+  border-left-color: crimson;
+}
+.callout.bad_practice::before {
+  content: "\1f6d1";
 }
 </style>
 
