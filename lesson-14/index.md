@@ -9,7 +9,7 @@
   border-left-color: darkslategray;
 }
 .callout.technical::before {
-  content: "\e29a99";
+  content: "\2699";
 }
 
 </style>
