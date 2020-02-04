@@ -28,7 +28,7 @@ First, however, we will look at "Forward Declarations".
 
 So far, when we needed to reference a class (e.g. in a function declaration that has it as an argument) we `#include` the full header.  When we "mention" (e.g. a pointer, which we will cover later in the course, or by-reference argument) an object we can get away with just saying "this thing exists and is a class".
 
-This is because a pointer or reference uses the same amount of memory regardless of the size of the thing it points to.  This is all the compiler cares about when building individual files.
+&#x2699; This is because a pointer or reference uses the same amount of memory regardless of the size of the thing it points to.  This is all the compiler cares about when building individual files.
 {: .callout .technical }
 
 To create a forward declaration, we just declare the class as being of type Class but no body:
