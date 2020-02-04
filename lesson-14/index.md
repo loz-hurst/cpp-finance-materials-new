@@ -14,7 +14,7 @@ So far, when we needed to reference a class (e.g. in a function declaration that
 
 {{ site.data.callouts.technical }}
 This is because a pointer or reference uses the same amount of memory regardless of the size of the thing it points to.  This is all the compiler cares about when building individual files.
-{{ sites.data.callouts.end }}
+{{ site.data.callouts.end }}
 
 To create a forward declaration, we just declare the class as being of type Class but no body:
 
