@@ -5,10 +5,10 @@
   border-bottom: 1px solid silver;
   padding-left: 3px;
 }
-.callout .technical {
+.callout.technical {
   border-left-color: darkslategray;
 }
-.callout .technical::before {
+.callout.technical::before {
   content: "&#x2699;";
 }
 
