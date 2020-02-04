@@ -18,13 +18,13 @@
   content: "\1f56e";
 }
 .callout.philosophy {
-  border-left-color: aquamarine;
+  border-left-color: blue;
 }
 .callout.philosophy::before {
   content: "\1f4ad";
 }
 .callout.bad_practice {
-  border-left-color: crimson;
+  border-left-color: red;
 }
 .callout.bad_practice::before {
   content: "\1f6d1";
