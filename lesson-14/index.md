@@ -12,11 +12,8 @@ First, however, we will look at "Forward Declarations".
 
 So far, when we needed to reference a class (e.g. in a function declaration that has it as an argument) we `#include` the full header.  When we "mention" (e.g. a pointer, which we will cover later in the course, or by-reference argument) an object we can get away with just saying "this thing exists and is a class".
 
-{{ site.data.callouts.technical }}
-
 This is because a pointer or reference uses the same amount of memory regardless of the size of the thing it points to.  This is all the compiler cares about when building individual files.
-
-{{ site.data.callouts.end }}
+{: .callout .technical }
 
 To create a forward declaration, we just declare the class as being of type Class but no body:
 
@@ -54,3 +51,10 @@ We can use forward declarations to reduce the number of headers included.  This 
 You should not use forward declarations to circumvent compile-time warnings and errors - if your code will not compile with the full header you have an architectural problem with your program that needs fixing.
 
 {{ site.data.callouts.end }}
+
+<div class="test">
+
++
++
+
+</div>
