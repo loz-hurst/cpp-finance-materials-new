@@ -54,10 +54,3 @@ We can use forward declarations to reduce the number of headers included.  This 
 You should not use forward declarations to circumvent compile-time warnings and errors - if your code will not compile with the full header you have an architectural problem with your program that needs fixing.
 
 {{ site.data.callouts.end }}
-
-<div class="test">
-
-* foo
-* bar
-
-</div>
