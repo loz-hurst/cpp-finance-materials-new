@@ -1,3 +1,11 @@
+<style type="text/css">
+.callout {
+  border-left: 3px solid black;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+}
+</style>
+
 # Lesson 14 - Dynamic Polymorphism
 
 ## Recap
