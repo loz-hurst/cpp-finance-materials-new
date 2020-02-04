@@ -14,8 +14,8 @@
 .callout.terminology {
   border-left-color: darkkhaki;
 }
-.callout.technical::before {
-  content: "\d83ddde3";
+.callout.terminology::before {
+  content: "\1f4da";
 }
 </style>
 
