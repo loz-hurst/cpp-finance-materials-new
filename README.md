@@ -8,7 +8,7 @@ Based upon (but not directly derived from) work by Matthew Collins, which was in
 
 ## About this course
 
-This course uses C++17 as the standard it presents.  Concepts from C and older standards are presented at the end but modern practices and containers, such as references and std::array, are presented in place of out moded concepts such as pointers and C arrays.
+This course uses C++14 as the standard it presents.  Concepts from C and older standards are presented at the end but modern practices and containers, such as references and std::array, are presented in place of out moded concepts such as pointers and C arrays.
 
 This a re-design of the delivery of the module, begun in week 14 of the 20-week course in academic year 2019/2020.
 
