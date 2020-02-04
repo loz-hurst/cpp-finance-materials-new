@@ -1,8 +1,9 @@
 <style type="text/css">
 .callout {
-  border-left: 3px solid black;
+  border-left: 5px solid black;
   border-top: 1px solid silver;
   border-bottom: 1px solid silver;
+  padding-left: 3px;
 }
 </style>
 
