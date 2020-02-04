@@ -57,7 +57,7 @@ You should not use forward declarations to circumvent compile-time warnings and 
 
 <div class="test">
 
-+ foo
-+ bar
+* foo
+* bar
 
 </div>
