@@ -21,11 +21,8 @@ To create a forward declaration, we just declare the class as being of type Clas
 class MyClass;
 ```
 
-{{ site.data.callouts.terminology }}
-
 This is telling the compiler "MyClass" is a thing of type class, but nothing mmore about it.
-
-{{ site.data.callouts.end }}
+{: .callout .terminology }
 
 You can do this with other types too, if you need to (but remember the type of the thing you are forward declaring has to have been declared - `class` is built into C++ so we do not have to worry about this in the above example).
 
@@ -37,14 +34,10 @@ class MyClass;
 void SomeFunction(MyClass & my_class);
 ```
 
-{{ site.data.callouts.philosophy }}
-
 We can use forward declarations to reduce the number of headers included.  This has multiple benefits such as:
-
 + reduces compile times, as the number of files to be pre-processed is smaller (less work for the pre-processor) and the resultant file to be compiled, after pre-processing, is smaller (less work for the compiler).
 + reduces the number of files that have to be recompiled when the forward-declared object (and hence its header) changes.  This is especially useful if using compiler caching that detect unchanged tranlation units.
-
-{{ site.data.callouts.end }}
+{: .callout .philosophy }
 
 {{ site.data.callouts.bad_practice }}
 
