@@ -16,7 +16,7 @@ The original 3 hours slot format of 1hr lecture/2hr lab session wasn't working t
 
 ## Content
 
-The content of this course and the intellectual property contained there-in are licenced under the [Creative Commons CC BY-SA 4.0 licence](https://creativecommons.org/licenses/by-sa/4.0/), unless clearly indicated otherwise (for example non-original content, such as an images, which may be included under another licence - these will be clearly attributed and the licence stated):
+The content of this course and the intellectual property contained there-in are licensed under the [Creative Commons CC BY-SA 4.0 licence](https://creativecommons.org/licenses/by-sa/4.0/), unless clearly indicated otherwise (for example non-original content, such as an images, which may be included under another licence - these will be clearly attributed and the licence stated):
 
 ### Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
 
@@ -47,7 +47,7 @@ No warranties are given. The license may not give you all of the permissions nec
 
 ## Source code
 
-The code, including (but not limited to) the document mark-up, source code samples and templates for this course are licenced under the GPLv3 (or later) and the following terms apply:
+The code, including (but not limited to) the document mark-up, source code samples and templates for this course are licensed under the GPLv3 (or later) and the following terms apply:
 
 This file is part of C++ for Finance.
 
