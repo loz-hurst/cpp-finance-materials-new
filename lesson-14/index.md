@@ -21,7 +21,7 @@ To create a forward declaration, we just declare the class as being of type Clas
 class MyClass;
 ```
 
-This is telling the compiler "MyClass" is a thing of type class, but nothing mmore about it.
+This is telling the compiler "MyClass" is a thing of type class, but nothing more about it.
 {: .callout .terminology }
 
 You can do this with other types too, if you need to (but remember the type of the thing you are forward declaring has to have been declared - `class` is built into C++ so we do not have to worry about this in the above example).
@@ -34,19 +34,8 @@ class MyClass;
 void SomeFunction(MyClass & my_class);
 ```
 
-{::options parse_block_html="true" /}
-
-<div class="callout philosophy">
-
-We can use forward declarations to reduce the number of headers included.  This has multiple benefits such as:
-
-+ reduces compile times, as the number of files to be pre-processed is smaller (less work for the pre-processor) and the resultant file to be compiled, after pre-processing, is smaller (less work for the compiler).
-+ reduces the number of files that have to be recompiled when the forward-declared object (and hence its header) changes.  This is especially useful if using compiler caching that detect unchanged tranlation units.
-
-</div>
-
-Test
-{: .callout .beware }
+We can use forward declarations to reduce the number of headers included.  This has multiple benefits, one of the key ones is reduced compile time as the number of files to be pre-processed is smaller (less work for the pre-processor) and the resultant file to be compiled, after pre-processing, is smaller (less work for the compiler).  It also reduces the number of files that have to be recompiled when the forward-declared object (and hence its header) changes, which is especially useful if using a compiler cache (e.g. [ccache](https://ccache.dev/)) that detect unchanged tranlation units.
+{: .callout .philosophy }
 
 You should not use forward declarations to circumvent compile-time warnings and errors - if your code will not compile with the full header you have an architectural problem with your program that needs fixing.
 {: .callout .bad_practice }
