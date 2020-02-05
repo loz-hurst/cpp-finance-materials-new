@@ -2,7 +2,7 @@ title: C++ for finance course materials
 author:
   name: Laurence Alexander Hurst
   email: loz.hurst@gmail.com
-description:>
+description: >
   Materials for C++ For Finance.  Copyright 2020 Laurence Alexander Hurst.  Originally delivered at University of Birmingham.
   Based upon (but not directly derived from) work by Matthew Collins, which was in turn based upon work by Nick Webber.
   This course uses C++14 as the standard it presents. Concepts from C and older standards are presented at the end but modern practices and containers, such as references and std::array, are presented in place of out moded concepts such as pointers and C arrays.
