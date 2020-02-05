@@ -2,3 +2,45 @@
 ---
 
 @import "{{ site.theme }}";
+
+.callout {
+  border-left: 5px solid black;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver;
+  padding-left: 3px;
+}
+
+.callout.technical {
+  border-left-color: darkslategray;
+}
+.callout.technical::before {
+  content: "\2699";
+}
+
+.callout.terminology {
+  border-left-color: darkkhaki;
+}
+.callout.terminology::before {
+  content: "\1f56e";
+}
+
+.callout.philosophy {
+  border-left-color: navy;
+}
+.callout.philosophy::before {
+  content: "\1f4ad";
+}
+
+.callout.beware {
+  border-left-color: darkorange;
+}
+.callout.beware::before {
+  content: "\26a0";
+}
+
+.callout.bad_practice {
+  border-left-color: red;
+}
+.callout.bad_practice::before {
+  content: "\1f6d1";
+}
