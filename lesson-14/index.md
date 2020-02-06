@@ -152,8 +152,8 @@ int main() {
 	MyClass cls1;
 	MyOtherClass cls2;
 
-	MyFunction(cls1);
-	MyFunction(cls2);
+	MyFunction(cls1); // Hello world is printed
+	MyFunction(cls2); // Hello from another world is printed
 
 	return 0;
 }
