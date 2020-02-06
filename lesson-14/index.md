@@ -117,4 +117,96 @@ The first time MyFunction is called, the parameter cls will have a static type o
 
 ### Virtual functions
 
+We briefly met virtual functions last lesson when discussing the terms "abstract class" and "purely abstract class" (also known as "interfaces").
+
+When a virtual function is invoked through a reference to a base class, C++ will run the last override of that signature in the dynamic type of the reference.  That is; the last version of that function defined in the class hierarchy at or below the the reference's static type.
+
+If we add the keyword `override` to the end of the declaration of the derived function, the compiler will check that it does actually override something and generate a compile-time error if it does not.
+
+Getting in the habit of always adding `override` to functions will help prevent the common mistake of mistyping function names or parameters lists.
+{: .callout .good_practice}
+
+For example:
+
+```cpp
+#include <iostream>
+
+class MyClass {
+public:
+    virtual void SayHello () const {
+        std::cout << "Hello world" << std::endl;
+    }    
+};
+
+class MyOtherClass : public MyClass {
+    virtual void SayHello () const override {
+        std::cout << "Hello from another world" << std::endl;
+    }
+};
+
+void MyFunction (const MyClass & cls) {
+    cls.SayHello();
+}
+
+int main() {
+	MyClass cls1;
+	MyOtherClass cls2;
+
+	MyFunction(cls1);
+	MyFunction(cls2);
+
+	return 0;
+}
+```
+
+### Dynamic binding
+
+The process of finding the implementation at runtime is called *dynamic binding* (sometimes also known as "late binding").
+{: .callout .terminology}
+
+Dynamic binding of virtual functions only applies with indirection.  It does not happen if a reference is not used:
+
+```cpp
+// Note cls is now NOT a reference
+void MyFunction (const MyClass cls) {
+    cls.SayHello();
+}
+
+int main() {
+	MyOtherClass cls1;
+
+	MyFunction(cls2); // Prints "Hello World" from MyClass
+
+	return 0;
+}
+```
+
+Remember when passing by value a copy is made, and that copy will be a new object of type MyClass.  Only a reference will not create a new object, so it makes sense that only a reference might refer to something with a different type to its static one and therefore have a dynamic type.
+{: .callout .technical}
+
+The compiler looks for member functions based on the static type - the actual type of the object the reference will point to is irrelevant at compile time:
+
+```cpp
+int i;
+
+MyClass cls1;
+MyOtherClass cls2;
+
+while( std::cout << "Enter an integer: " && ! (std::cin >> i) )
+{
+    std::cin.clear();
+    std::string line;
+    std::getline(std::cin, line);
+    std::cout << "I am sorry, but '" << line << "' is not an integer" << std::endl;
+}
+
+// Compiler can't tell whether MyClass or MyOtherClass will be used at compile time
+MyFunction((i>0) ? cls1 : cls2);
+```
+
+Dynamic binding only occurs when a function is virtual.
+
+If during compilation a member function is found that is a virtual function **and** it is called through a reference then the decision of which function will actually be executed is deferred until runtime.
+{: .callout .technical}
+
 

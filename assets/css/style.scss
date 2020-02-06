@@ -38,6 +38,13 @@
   content: "\26a0";
 }
 
+.callout.good_practice {
+  border-left-color: green;
+}
+.callout.good_practice::before {
+  content: "\2714";
+}
+
 .callout.bad_practice {
   border-left-color: red;
 }
