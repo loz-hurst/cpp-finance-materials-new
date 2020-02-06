@@ -1,19 +1,27 @@
-# Lesson 14 - Dynamic Polymorphism
+---
+title: Lesson 14 - Dynamic Polymorphism
+---
+
+# {{ page.title }}
+{: .no_toc}
+
+- TOC
+{:toc}
 
 ## Recap
 
-Last lesson we looked at inheritence, how that works in C++ and creating derived a base Option class, as well as derived classes for European Call and Put options.
+Last lesson we looked at inheritance, how that works in C++ and creating derived a base Option class, as well as derived classes for European Call and Put options.
 
-This week we will look at using inheritence for an important, and powerful, aspect of Object-Orientated Programming - "Dynamic Polymorphism" - as well as how casting works in contemporary C++.
+This week we will look at using inheritance for an important, and powerful, aspect of Object-Orientated Programming - "Dynamic Polymorphism" - as well as how casting works in contemporary C++.
 
 First, however, we will look at "Forward Declarations".
 
-## Foward Declarations
+## Forward Declarations
 
-So far, when we needed to reference a class (e.g. in a function declaration that has it as an argument) we `#include` the full header.  When we "mention" (e.g. a pointer, which we will cover later in the course, or by-reference argument) an object we can get away with just saying "this thing exists and is a class".
+So far, when we needed to reference a class (e.g. in a function declaration that has it as an argument) we `#include` the full header.  When we "mention" (e.g. by-reference argument) an object we can get away with just saying "this thing exists and is a class".
 
-This is because a pointer or reference uses the same amount of memory regardless of the size of the thing it points to.  This is all the compiler cares about when building individual files.
-{: .callout .technical }
+This is because a reference uses the same amount of memory regardless of the size of the thing it points to.  This is all the compiler cares about when building individual files.
+{: .callout .technical}
 
 To create a forward declaration, we just declare the class as being of type Class but no body:
 
@@ -22,7 +30,7 @@ class MyClass;
 ```
 
 This is telling the compiler "MyClass" is a thing of type class, but nothing more about it.
-{: .callout .terminology }
+{: .callout .terminology}
 
 You can do this with other types too, if you need to (but remember the type of the thing you are forward declaring has to have been declared - `class` is built into C++ so we do not have to worry about this in the above example).
 
@@ -34,8 +42,41 @@ class MyClass;
 void SomeFunction(MyClass & my_class);
 ```
 
-We can use forward declarations to reduce the number of headers included.  This has multiple benefits, one of the key ones is reduced compile time as the number of files to be pre-processed is smaller (less work for the pre-processor) and the resultant file to be compiled, after pre-processing, is smaller (less work for the compiler).  It also reduces the number of files that have to be recompiled when the forward-declared object (and hence its header) changes, which is especially useful if using a compiler cache (e.g. [ccache](https://ccache.dev/)) that detect unchanged tranlation units.
-{: .callout .philosophy }
+We can use forward declarations to reduce the number of headers included.  This has multiple benefits, one of the key ones is reduced compile time as the number of files to be pre-processed is smaller (less work for the pre-processor) and the resultant file to be compiled, after pre-processing, is smaller (less work for the compiler).  It also reduces the number of files that have to be recompiled when the forward-declared object (and hence its header) changes, which is especially useful if using a compiler cache (e.g. [ccache](https://ccache.dev/)) that detect unchanged translation units.
+{: .callout .philosophy}
 
 You should not use forward declarations to circumvent compile-time warnings and errors - if your code will not compile with the full header you have an architectural problem with your program that needs fixing.  You probably need an interface (see last week's lesson) if you have a circular arrangement of types, for example.
-{: .callout .bad_practice }
+{: .callout .bad_practice}
+
+## Polymorphism
+
+We have already seen polymorphism in action with overloaded functions - one function can have more than one form (signature).  This is a kind of polymorphism.
+
+Polymorphism is the ability for an object to have several different forms.
+{: .callout .terminology}
+
+When designing our software we want to avoid the use of large switch or if statements to test if an object is one of several things in order to use them.  Polymorphism allows us to avoid this by creating an interface that several types of object can provide and that can be used to interact with all of them.  For example, when calculating pay-off; instead of testing if an European Option is a Call or Put, polymorphism allows us to say "all options can calculate a pay-off" and use either in the same way to find the pay-off without worrying about which specific one is being used.
+{: .callout .philosophy}
+
+The sort of polymorphism we are about to look at in more detail happens through inheritance, which we introduced last lesson.
+
+The polymorphism that happens when a function is overloaded, or templates are used, is called *static* polymorphism.  This happens at compile time, the compiler works out what form is used according to rules.  The polymorphism we are about to look at is called *dynamic* polymorphism and the program works out at runtime which code to use.
+{: .callout .terminology}
+
+## Dynamic Polymorphism
+
+In C++ we think of dynamic polymorphism as occurring when the same method call can have different behaviour.  This is realised through `virtual` methods in base classes that are overridden by sub-classes.
+
+The base class is said to provide an *interface*.  That is, a common set of methods for interacting with any object derived from that class (i.e. anything that *is-a* that type).
+{: .callout .terminology}
+
+Recall from last lesson that `virtual` method do not have to be implemented in the base class, in which case the base class is "abstract".
+
+The derived class an provide a specialised version of a `virtual` method that overrides what is in the base class.
+
+A derived class that provides a version of a purely virtual method in its base class is said to *implement* that method.
+{: .callout .terminology}
+
+This is one of the most important ideas and aspects of object-orientated programming: One interface, multiple implementations.
+
+
