@@ -88,8 +88,33 @@ This is one of the most important ideas and aspects of object-orientated program
 
 As you are very familiar with by now, C++ requires every name (variable, function, etc.) we create to have a type.  In the case of a reference, it actually has two: a *static* type and a *dynamic* type.  They may be the same or different.
 
-The *static* type of a reference is the type specified when it is declared.  For example, `MyClass & cls1` declares a reference called cls1 with a static type of MyClass.
+The *static* type of a reference is the type specified when it is declared.
 {: .callout .terminology}
 
-The *dynamic* type of a reference is the type of the object being referred to, when a reference refers to something valid.  For example, `MyOtherClass cls2; MyClass & cls1 {cls2};` declares cls2 as a MyOtherClass and a reference called cls1 to it (assuming MyOtherClass is derived from MyClass).  cls1 still has a static type of MyClass but a dynamic type of MyOtherClass.
+The *dynamic* type of a reference is determined by the type of the object being referred to, when a reference refers to something valid.
 {: .callout .terminology}
+
+For example:
+
+```cpp
+class MyClass {};
+class MyOtherClass : public MyClass {};
+
+void MyFunction (const MyClass & cls) {}
+
+int main() {
+	MyClass cls1;
+	MyOtherClass cls2;
+
+	MyFunction(cls1);
+	MyFunction(cls2);
+
+	return 0;
+}
+```
+
+The first time MyFunction is called, the parameter cls will have a static type of MyClass (as that is what cls was declared as) and a dynamic type of MyClass too (as that is the type of the thing being referenced).  The second time, cls will still have a static type of MyClass (its declaration has not changed) but a dynamic type of MyOtherClass (as that is the type of cls2, which is what is being referenced in the second call).
+
+### Virtual functions
+
+
