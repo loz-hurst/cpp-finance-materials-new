@@ -18,7 +18,7 @@ First, however, we will look at "Forward Declarations".
 
 ## Forward Declarations
 
-So far, when we needed to reference a class (e.g. in a function declaration that has it as an argument) we `#include` the full header.  When we "mention" (e.g. by-reference argument) an object we can get away with just saying "this thing exists and is a class".
+So far, when we needed to reference a class (e.g. in a function declaration that has it as an argument) we include the full header.  When we "mention" (e.g. by-reference argument) an object we can get away with just saying "this thing exists and is a class".
 
 This is because a reference uses the same amount of memory regardless of the size of the thing it points to.  This is all the compiler cares about when building individual files.
 {: .callout .technical}
@@ -45,7 +45,12 @@ void SomeFunction(MyClass & my_class);
 We can use forward declarations to reduce the number of headers included.  This has multiple benefits, one of the key ones is reduced compile time as the number of files to be pre-processed is smaller (less work for the pre-processor) and the resultant file to be compiled, after pre-processing, is smaller (less work for the compiler).  It also reduces the number of files that have to be recompiled when the forward-declared object (and hence its header) changes, which is especially useful if using a compiler cache (e.g. [ccache](https://ccache.dev/)) that detect unchanged translation units.
 {: .callout .philosophy}
 
-You should not use forward declarations to circumvent compile-time warnings and errors - if your code will not compile with the full header you have an architectural problem with your program that needs fixing.  You probably need an interface (see last week's lesson) if you have a circular arrangement of types, for example.
+You can only use forward declarations where the object is just mentioned, using it (e.g. calling any of its methods) requires the full object definition and this an include of the header.
+
+Simply declaring a variable of that object's type **is using** it (it will create an instance using a constructor).
+{: .callout .beware}
+
+Do not use forward declarations to circumvent compile-time warnings and errors - if your code will not compile with the full header you have an architectural problem with your program that needs fixing.  You probably need an interface (see last week's lesson) if you have a circular arrangement of types, for example.
 {: .callout .bad_practice}
 
 ## Polymorphism
@@ -65,18 +70,26 @@ The polymorphism that happens when a function is overloaded, or templates are us
 
 ## Dynamic Polymorphism
 
-In C++ we think of dynamic polymorphism as occurring when the same method call can have different behaviour.  This is realised through `virtual` methods in base classes that are overridden by sub-classes.
+In C++ we think of dynamic polymorphism as occurring when the same method call can have different behaviour.  This is realised through virtual methods in base classes that are overridden by sub-classes.
 
 The base class is said to provide an *interface*.  That is, a common set of methods for interacting with any object derived from that class (i.e. anything that *is-a* that type).
 {: .callout .terminology}
 
-Recall from last lesson that `virtual` method do not have to be implemented in the base class, in which case the base class is "abstract".
+Recall from last lesson that virtual method do not have to be implemented in the base class, in which case the base class is "abstract".
 
-The derived class an provide a specialised version of a `virtual` method that overrides what is in the base class.
+The derived class an provide a specialised version of a virtual method that overrides what is in the base class.
 
 A derived class that provides a version of a purely virtual method in its base class is said to *implement* that method.
 {: .callout .terminology}
 
 This is one of the most important ideas and aspects of object-orientated programming: One interface, multiple implementations.
 
+### Types
 
+As you are very familiar with by now, C++ requires every name (variable, function, etc.) we create to have a type.  In the case of a reference, it actually has two: a *static* type and a *dynamic* type.  They may be the same or different.
+
+The *static* type of a reference is the type specified when it is declared.  For example, `MyClass & cls1` declares a reference called cls1 with a static type of MyClass.
+{: .callout .terminology}
+
+The *dynamic* type of a reference is the type of the object being referred to, when a reference refers to something valid.  For example, `MyOtherClass cls2; MyClass & cls1 {cls2};` declares cls2 as a MyOtherClass and a reference called cls1 to it (assuming MyOtherClass is derived from MyClass).  cls1 still has a static type of MyClass but a dynamic type of MyOtherClass.
+{: .callout .terminology}
