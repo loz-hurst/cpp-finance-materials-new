@@ -181,7 +181,7 @@ int main() {
 }
 ```
 
-Remember when passing by value a copy is made, and that copy will be a new object of type MyClass.  Only a reference will not create a new object, so it makes sense that only a reference might refer to something with a different type to its static one and therefore have a dynamic type.
+Remember when passing by value a copy is made, and that copy will be a new object of the declared type.  Only a reference will not create a new object, so it makes sense that only a reference might refer to something with a different type to its static one and therefore have a dynamic type.
 {: .callout .technical}
 
 The compiler looks for member functions based on the static type - the actual type of the object the reference will point to is irrelevant at compile time:
