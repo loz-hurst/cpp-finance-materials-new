@@ -26,6 +26,7 @@ This is because a reference uses the same amount of memory regardless of the siz
 To create a forward declaration, we just declare the class as being of type Class but no body:
 
 ```cpp
+// Forward declaration - see MyObjects.hpp for full definition
 class MyClass;
 ```
 
@@ -37,9 +38,11 @@ You can do this with other types too, if you need to (but remember the type of t
 The forward declared object can then be used, e.g. in this function declaration with a by-reference argument:
 
 ```cpp
+// Forward declaration - see MyObjects.hpp for full definition
 class MyClass;
 
-void SomeFunction(MyClass & my_class);
+// SomeFunction takes a reference to a MyClass instance
+void SomeFunction(const MyClass &);
 ```
 
 We can use forward declarations to reduce the number of headers included.  This has multiple benefits, one of the key ones is reduced compile time as the number of files to be pre-processed is smaller (less work for the pre-processor) and the resultant file to be compiled, after pre-processing, is smaller (less work for the compiler).  It also reduces the number of files that have to be recompiled when the forward-declared object (and hence its header) changes, which is especially useful if using a compiler cache (e.g. [ccache](https://ccache.dev/)) that detect unchanged translation units.
@@ -97,9 +100,12 @@ The *dynamic* type of a reference is determined by the type of the object being 
 For example:
 
 ```cpp
+// My base class
 class MyClass {};
+// My Derived class
 class MyOtherClass : public MyClass {};
 
+// Some function that takes a reference to an instance of MyClass
 void MyFunction (const MyClass & cls) {}
 
 int main() {
@@ -131,19 +137,24 @@ For example:
 ```cpp
 #include <iostream>
 
+// Base class for all things that can say hello
 class MyClass {
 public:
+	// Says hello on cout
     virtual void SayHello () const {
         std::cout << "Hello world" << std::endl;
     }    
 };
 
+// Another class that derives from MyClass to say hello
 class MyOtherClass : public MyClass {
+	// Says a different hello on cout
     virtual void SayHello () const override {
         std::cout << "Hello from another world" << std::endl;
     }
 };
 
+// Calls SayHello in the given class reference
 void MyFunction (const MyClass & cls) {
     cls.SayHello();
 }
@@ -209,4 +220,235 @@ Dynamic binding only occurs when a function is virtual.
 If during compilation a member function is found that is a virtual function **and** it is called through a reference then the decision of which function will actually be executed is deferred until runtime.
 {: .callout .technical}
 
+## Virtual Inheritance
 
+Last lesson we looked at inheritance in detail and briefly mentioned the challenge of multiple inheritance.  Suppose we have this class structure:
+
+```cpp
+// Class Animal - base class for an animal
+class Animal {
+public:
+	// Makes the animal breath
+	void Breath();
+};
+
+// A base class for all animals with legs
+class LeggedAnimal : public Animal {};
+// A base class for all animals with wings
+class WingedAnimmal : public Animal {};
+
+// A pigeon, which has 2 legs and wings
+class Pigeon : public LeggedAnimal, public WingedAnimmal {
+public:
+	// Make pigeon fly
+	void Fly() {
+		// Pigeons need to breath while in flight
+		Breath();
+	}
+};
+```
+
+Pigeon inherits from both LeggedAnimal and WingedAnimal, and both of them inherit from Animal.  In C++, Pigeon ends up with two distinct Animal sub-objects created one from LeggedAnimal and one from WingedAnimal.  So which one should get used when Pigeon calls Breath?  The answer is nobody can tell, and neither can the compiler - which will generate a compile-time error.
+
+This example is called *the diamond problem* (sometimes *the deadly diamond of death*) because of the diamond shape made if you draw out the class inheritance structure with (in our example) Animal at the top, LeggedAnimal and WingedAnimal in the middle and Pigeon at the bottom.
+{: .callout .terminology}
+
+It is possible to resolve this ambiguity by explicitly referencing one of the Animals but Pigeon will still inherit two sub-objects which is inefficient and makes no sense (Pigeon is **a** animal, not two animals):
+
+```cpp
+void Pigeon::Fly() {
+	// Use the Breath from the 'LeggedAnimal' side of the tree
+	LeggedAnimal::Breath();
+}
+```
+
+On top of being in efficient, having two Animals means each has its own internal state - what happens if your code calls Breath from LeggedAnimal and another piece of code, either in WingedAnimal or another derived class, calls it from the other side?
+
+To deal with this, C++ allows us to use the virtual keyword when inheriting:
+
+```cpp
+class LeggedAnimal : virtual public Animal {/* ... */};
+class WingedAnimal : virtual public Animal {/* ... */};
+```
+
+Using the virtual keyword when specifying the base classes is called *virtual inheritance*.
+{: .callout .terminology}
+
+Here what virtual does is different to with functions - virtual inheritance at compile time.  The compiler will ensure that only one Animal sub-object regardless of how many times in a derived objects hierarchy it is virtually inherited.  If any objects inherited Animal non-virtually they would still get a distinct sub-object created.
+
+The rule is: one sub-object for all the times a class is virtually inherited in a hierarchy and one sub-object per non-virtual inheritance.
+
+Multiple inheritance can be very problematic and is best avoided until you are adept at designing hierarchies but that might require redesign of your structure sometimes.  Also consider if composition is a better model for your problem.
+{: .callout .philosophy}
+
+If you think it might make sense for multiple things to derive from your class and for one thing to be derived from more than one of them, it is best to make the inheritance virtual from the start.
+{: .callout .good_practice}
+
+## Casting
+
+Casting is the act of changing the type of an object.
+{: .callout .terminology}
+
+Now we have hierarchies of objects we might want to change the static type of an instance from one type to another.  C++ provides four cast operators to help with this.  They are all of the form `cast_type<T>(exp)` where exp is an expression whose result is to be converted to type T.
+
+The four operators are:
+
+`dynamic_cast<T>`
+: Cast a reference into a reference to an object in the same hierarchy.  Checks the case is valid at runtime.
+
+`static_cast<T>`
+: Same as `dynamic_cast<T>` but only checks at compile time.
+
+`reinterpret_cast<T>`
+: Casts between any two objects.  Does no checking - dangerous.
+
+`const_cast<T>`
+: Enables const-ness to be changed.
+
+### dynamic_cast
+
+This can only be used with references to classes.  If it cannot case to a valid object of the destination type then throws an exception.
+
+```cpp
+#include <iostream>
+
+// My base class - virtual destructor so C++ knows it's a polymorphic base
+class MyClass {
+public:
+    virtual ~MyClass() = default;
+};
+
+// My derived class
+class MyOtherClass : public MyClass {};
+
+int main() {
+	MyOtherClass cls1;
+	MyClass cls2;
+	
+	MyClass & cls3 {cls1};
+	MyClass & cls4 {cls2};
+	
+	// This is fine - the dynamic type of cls3 is MyOtherClass
+	MyOtherClass & other_cls1 {dynamic_cast<MyOtherClass&>(cls3)};
+	std::cout << "Converted cls1, now for cls2..." << std::endl;
+
+	// Throws an exception at runtime - cannot convert dynamic type MyClass to MyOtherClass
+	MyOtherClass & other_cls2 {dynamic_cast<MyOtherClass&>(cls4)};
+}
+```
+
+In order for C++ to decide that the base class is polymorphic (and therefore can be used with dynamic_cast) is must have at least one virtual method.
+{: .callout .technical}
+
+dynamic_cast cannot be used with multiple inheritance or non-public (private/protected) inheritance.
+{: .callout .beware}
+
+For dynamic_cast to be available, the C++ compiler needs to have run-time type information (or run-time type identification) - RTTI - enabled.  For some compilers it is always available, for others it is optional and can the turned on and off.  Bjarne Stroustrup deliberately did not include this in the original C++ design because he felt the feature was frequently abused.
+{: .callout .philosophy}
+
+### static_cast
+
+This is the preferred way to cast when wanting (supported) explicit conversions, e.g. deliberately converting a double to int (ordinarily this would be a compiler warning), or using a conversion constructor.
+
+```cpp
+double a {2.1};
+int b {static_cast<int>(a)}; // No warning - we have explicitly said we want to convert
+
+MyOtherClass cls1;
+MyClass cls2 {static_cast<MyClass>(cls1)};
+```
+
+Only use static_cast if the cast make sense.  It can be used to do stupid things!
+{: .callout .beware}
+
+```cpp
+MyClass cls1;
+// Unlike dynamic_cast, this will not error but will cause bad things to happen at run-time
+MyOtherClass & cls2 {static_cast<MyOtherClass&>(cls1)};
+```
+
+static_cast is computationally cheaper than a dynamic_cast because it does no runtime checks - so only use it to cast down the hierarchy if you know the cast is sensible and need to be cheap.
+
+Prefer dynamic_cast for casting down the hierarchy in most situations - it is safer as it will throw exceptions if the object cannot be cast.
+{: .callout .good_practice}
+
+### reinterpret_cast
+
+This can cast unrelated reference to one-another.
+
+reinterpret_cast does no checking, at compile- or run-time.  It can be extremely dangerous.
+{: .callout .beware}
+
+```cpp
+// Some class called A
+class A {};
+// Some unrelated class called B
+class B {};
+
+int main() {
+	A cls1;
+	B & cls2 {reinterpret_cast<B&>(cls1)}; // No error even though A cannot be converted to B!
+}
+```
+
+This is the C++ equivalent to C style casting:
+
+```c
+// Don't do this, it is C code - just for illustration
+double a = 2.1;
+int b = (int)a;
+```
+
+reinterpret_cast cannot cast between const and non-const.
+
+### const_cast
+
+This can convert a const reference to a non-const one *provided the underlying object is not const*.
+
+If the original object is declared const, even a const_cast cannot change that.  It can only change the "const-ness" of a *reference*.
+{: .callout .philosophy}
+
+```cpp
+#include <iostream>
+
+// An example class
+class MyClass {
+private:
+	int i_; // Just an integer
+public:
+	// Constructor - initialise i_ to 0
+	MyClass() : i_{0} {}
+	// const function that can still set i_
+	void Func(const int value) const;
+	// Getter for i_
+	int GetI() { return i_; }
+};
+
+// Const function that changes the object - BAD!
+void MyClass::Func(const int value) const {
+	// "this->i_ = value;" or "i_ = value;" would be a compiler error because the function is const
+
+	// Make 'this' non-const using an explicit const_cast
+	const_cast<MyClass*>(this)->i_ = value;
+}
+
+int main() {
+	int a {5};
+	const int & b {a}; // const reference to a
+
+	// "b = 10;" would be an error because b is const
+	const_cast<int&>(b) = 10;
+	std::cout << a << std::endl; // a is now 10
+
+	MyClass cls1;
+	cls1.Func(7); // works fine despite changing the object AND being a const function
+	std::cout << cls1.GetI() << std::endl;
+}
+```
+
+### Final thoughts on casting
+
+Casting should be used sparingly and with great care.  If you thinking of doing a cast, think carefully if you are doing the right thing and if there is a better way (e.g. using polymorphism).
+
+In general do NOT use const_cast or reinterpret_cast.  The former breaks const-correctness and the latter is very dangerous as it turns anything into anything else with no checks that the conversion is possilbe.
+{: .callout .bad_practice}
