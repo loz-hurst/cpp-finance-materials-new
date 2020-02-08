@@ -1,0 +1,6 @@
+name: cpp-environment
+channels:
+  - conda-forge
+dependencies:
+# For C++ language examples
+  - xeus-cling
