@@ -296,7 +296,7 @@ Now we have hierarchies of objects we might want to change the static type of an
 The four operators are:
 
 `dynamic_cast<T>`
-: Cast a reference into a reference to an object in the same hierarchy.  Checks the case is valid at runtime.
+: Cast a reference into a reference to an object in the same hierarchy.  Checks the cast is valid at runtime.
 
 `static_cast<T>`
 : Same as `dynamic_cast<T>` but only checks at compile time.
@@ -309,7 +309,7 @@ The four operators are:
 
 ### dynamic_cast
 
-This can only be used with references to classes.  If it cannot case to a valid object of the destination type then throws an exception.
+This can only be used with references to classes.  If it cannot cast to a valid object of the destination type then throws an exception.
 
 ```cpp
 #include <iostream>
@@ -345,7 +345,10 @@ In order for C++ to decide that the base class is polymorphic (and therefore can
 dynamic_cast cannot be used with multiple inheritance or non-public (private/protected) inheritance.
 {: .callout .beware}
 
-For dynamic_cast to be available, the C++ compiler needs to have run-time type information (or run-time type identification) - RTTI - enabled.  For some compilers it is always available, for others it is optional and can the turned on and off.  Bjarne Stroustrup deliberately did not include this in the original C++ design because he felt the feature was frequently abused.
+For dynamic_cast to be available, the C++ compiler needs to have runtime type information (or run-time type identification) - RTTI - enabled.  For some compilers it is always available, for others it is optional and can the turned on and off.
+{: .callout .technical}
+
+Bjarne Stroustrup deliberately did not include the availability of any runtime type information in the original C++ design because he felt the feature was frequently abused.
 {: .callout .philosophy}
 
 ### static_cast
