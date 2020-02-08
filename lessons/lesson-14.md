@@ -5,6 +5,8 @@ title: Lesson 14 - Dynamic Polymorphism
 # {{ page.title }}
 {: .no_toc}
 
+Today's notebook: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/loz-hurst/cpp-finance-materials-new.git/master?filepath=lessons%2Flesson-14.ipynb)
+
 - TOC
 {:toc}
 
