@@ -123,16 +123,18 @@ int main() {
 
 The first time MyFunction is called, the parameter cls will have a static type of MyClass (as that is what cls was declared as) and a dynamic type of MyClass too (as that is the type of the thing being referenced).  The second time, cls will still have a static type of MyClass (its declaration has not changed) but a dynamic type of MyOtherClass (as that is the type of cls2, which is what is being referenced in the second call).
 
+### `override` keyword
+
+If we add the keyword `override` to the end of the declaration of a derived virtual function (it must be virtual), the compiler will check that the function does actually override something and generate a compile-time error if it does not.
+
+Getting in the habit of always adding `override` to functions will help prevent the common mistake of mistyping function names or parameters lists.
+{: .callout .good_practice}
+
 ### Virtual functions
 
 We briefly met virtual functions last lesson when discussing the terms "abstract class" and "purely abstract class" (also known as "interfaces").
 
 When a virtual function is invoked through a reference to a base class, C++ will run the last override of that signature in the dynamic type of the reference.  That is; the last version of that function defined in the class hierarchy at or below the the reference's static type.
-
-If we add the keyword `override` to the end of the declaration of the derived function, the compiler will check that it does actually override something and generate a compile-time error if it does not.
-
-Getting in the habit of always adding `override` to functions will help prevent the common mistake of mistyping function names or parameters lists.
-{: .callout .good_practice}
 
 For example:
 
@@ -170,6 +172,12 @@ int main() {
 
 	return 0;
 }
+```
+
+You can still call the virtual function in the base class explicitly, by giving the full identifier:
+
+```cpp
+cls2.MyClass::SayHello(); // Hello world is printed
 ```
 
 ### Dynamic binding
@@ -264,7 +272,7 @@ void Pigeon::Fly() {
 }
 ```
 
-On top of being in efficient, having two Animals means each has its own internal state - what happens if your code calls Breath from LeggedAnimal and another piece of code, either in WingedAnimal or another derived class, calls it from the other side?
+On top of being inefficient, having two Animals means each has its own internal state - what happens if your code calls Breath from LeggedAnimal and another piece of code, either in WingedAnimal or another derived class, calls it from the other side?
 
 To deal with this, C++ allows us to use the virtual keyword when inheriting:
 
@@ -276,7 +284,10 @@ class WingedAnimal : virtual public Animal {/* ... */};
 Using the virtual keyword when specifying the base classes is called *virtual inheritance*.
 {: .callout .terminology}
 
-Here what virtual does is different to with functions - virtual inheritance at compile time.  The compiler will ensure that only one Animal sub-object regardless of how many times in a derived objects hierarchy it is virtually inherited.  If any objects inherited Animal non-virtually they would still get a distinct sub-object created.
+Here what virtual does is different to with functions - virtual inheritance happens at compile time.  The compiler will ensure that only one Animal sub-object regardless of how many times in a derived objects hierarchy it is virtually inherited.  If any objects inherited Animal non-virtually they would still get a distinct sub-object created.
+
+With virtual inheritance the final level can only have one override of any virtual functions in the base.
+{: .callout .beware}
 
 The rule is: one sub-object for all the times a class is virtually inherited in a hierarchy and one sub-object per non-virtual inheritance.
 
