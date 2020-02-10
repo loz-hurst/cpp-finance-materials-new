@@ -468,3 +468,20 @@ Casting should be used sparingly and with great care.  If you thinking of doing 
 
 In general do NOT use const_cast or reinterpret_cast.  The former breaks const-correctness and the latter is very dangerous as it turns anything into anything else with no checks that the conversion is possilbe.
 {: .callout .bad_practice}
+
+## Lab exercises
+
+### 1. Take the call and put options from last week and make them polymorphic.
+
+Write a function `FindPayoff` that can take either a call or put option, by reference using a common base type, and print out the correct pay-off.
+
+### 2. Can you create an input file reader class with CSV and TSV specialised versions?
+
+You will need to consider which functionality will be common to both kinds (open the file, check it is good, check for not reading past the end of the file) and what will be specialised (the delimiters are the key difference).
+
+The TSV format is documented by IANA as the mime type [text/tab-separated-values](https://www.iana.org/assignments/media-types/text/tab-separated-values).  It is simpler than CSV, so start with this one.
+
+The recognised format for CSV is documented in [RFC4180](https://www.ietf.org/rfc/rfc4180.txt).  Note you will need to cope with quoted fields (which can include newlines-within-quotes).
+
+
+
