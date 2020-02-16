@@ -24,6 +24,13 @@
   content: "\1f56e";
 }
 
+.callout.history {
+  border-left-color: saddlebrown;
+}
+.callout.terminhistoryology::before {
+  content: "\1f3f0";
+}
+
 .callout.philosophy {
   border-left-color: navy;
 }
