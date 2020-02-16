@@ -147,6 +147,7 @@ The special member functions are (with signatures for a class called 'MyClass'):
 
 default constructor
 : `MyClass();`
+  
   Only if no other constructor is explicitly declared
 
 copy constructor
