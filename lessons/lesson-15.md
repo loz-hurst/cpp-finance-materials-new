@@ -389,5 +389,15 @@ The recognised format for CSV is documented in [RFC4180](https://www.ietf.org/rf
 
 ### 2. Add a fixed-width field format reader.
 
+Sometimes data is provided in a fixed-width data format, where each field is a set number of characters rather than being seperated by a delimiter.  Write a new sub-class that can read such a file with the following format (we will generalise it next week):
 
+- 8 characters for a date (YYYYMMDD)
+- 3 character for the stock symbol
+- 8 characters for the current value - first 4 are pre-decimal point, next 4 are after (i.e. field is price x 10000)
 
+For example:
+```text
+20200101UOB00012345
+20200101GOG01000056
+20200102LAH00000005
+```
