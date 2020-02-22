@@ -90,7 +90,7 @@ Previously a function has parameters, the values (but not the type) of which are
 1. Template parameters (e.g. `typename T`)
 2. Function parameters (e.g. `vec`)
 
-Values can be provided via the template parameters, provided that their value is known at compile time.  There are strict restrictions on what types can be used for values passed as template arguments - `enum`, `bool`, and integer types are the most useful ones permitted (floating point types, like double, are comming in C++20).  We have already seen this in use with `std::array` which uses a template parameter to specify the array size - we will revisit this when we look at template classes, below.
+Values can be provided via the template parameters, provided that their value is known at compile time.  There are strict restrictions on what types can be used for values passed as template arguments - `enum`, `bool`, and integer types are the most useful ones permitted (floating point types, like double, are comming in C++20).  We have already seen this in use with `std::array` which uses a template parameter to specify the array size.
 
 Like with function parameters, we can provide default values for our template parameters (both types and values):
 
@@ -248,3 +248,4 @@ public:
 
 Note that the specialised version of the class is treated as a completely separate implementation so everything has to be duplicated.
 {: .callout .beware}
+
