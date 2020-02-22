@@ -1,5 +1,5 @@
 ---
-title: Lesson 15 - Templates
+title: Lesson 16 - Templates
 ---
 
 # {{ page.title }}
@@ -51,7 +51,7 @@ Note that because `T` could be any type, including a complex one, we are now tak
 Templates allow us to write a function once, and the C++ compiler will automatically generate type-specific version when they are used during compilation.
 {: .callout .philosophy}
 
-There is not difference at all between `template <typename &hellip;>` and `template <class &hellip;>`.  `typename` and `class` mean the same to C++ and just say "what follows refers to a type, not an instance of something with that type".
+There is not difference at all between `template <typename `&hellip;`>` and `template <class `&hellip;`>`.  `typename` and `class` mean the same to C++ and just say "what follows refers to a type, not an instance of something with that type".
 {: .callout .technical}
 
 Likewise we could write a function to sum all the elements of any vector, provided the type inside the vector supports `operator+=` and can be constructed from an integer (which is certainly true for all the built in numeric types):
