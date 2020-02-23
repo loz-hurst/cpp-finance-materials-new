@@ -90,7 +90,7 @@ Previously a function has parameters, the values (but not the type) of which are
 1. Template parameters (e.g. `typename T`)
 2. Function parameters (e.g. `vec`)
 
-Values can be provided via the template parameters, provided that their value is known at compile time.  There are strict restrictions on what types can be used for values passed as template arguments - `enum`, `bool`, and integer types are the most useful ones permitted (floating point types, like double, are comming in C++20).  We have already seen this in use with `std::array` which uses a template parameter to specify the array size.
+Values can be provided via the template parameters, provided that their value is known at compile time.  There are strict restrictions on what types can be used for values passed as template arguments - `enum`, `bool`, and integer types are the most useful ones permitted (floating point types, like double, are comming in C++20).  We have already seen this in use with `std::array` which uses a template parameter to specify the array size - we will revisit this when we look at template classes, below.
 
 Like with function parameters, we can provide default values for our template parameters (both types and values):
 
@@ -249,3 +249,98 @@ public:
 Note that the specialised version of the class is treated as a completely separate implementation so everything has to be duplicated.
 {: .callout .beware}
 
+#### Applying class templates
+
+Using our new found template knowledge, we can create our own 2-dimensional array that uses a `std::array` type to store the array (n.b. we could also have used a `std::array<T, N*M>` and calculated the location in `at`, but it would have required a custom (friend) type for `operator[]` to return in order to emulate `[][]`):
+
+```cpp
+// A 2-dimensional NxM matrix of elements of type T
+template <typename T, size_t N, size_t M> class Matrix {
+private:
+	// The actual matrix data
+    std::array<std::array<T, M>, N> data_;
+public:
+	/* 
+	 * No argument constructor - delegates to the 1 argument constructor using
+	 * T's no argument constructor
+	 */
+    Matrix();
+    // 1 argument constructor - fills matrix with the value passed
+    Matrix(const T& initial_value);
+    // Get the element at n, m
+    T& at(const size_t n, const size_t m);
+    const T& at(const size_t n, const size_t m) const;
+    /*
+     * Get the array at row pos (i.e. n=pos), which can then the chained with
+     * that's array's operator[] to emulate [][] 2-dimensioned access.
+     */
+    const std::array<T, M>& operator[] (const size_t pos) const;
+    std::array<T, M>& operator[] (const size_t pos);
+};
+
+template <typename T, size_t N, size_t M> Matrix<T, N, M>::Matrix() : Matrix(T()) {}
+
+template <typename T, size_t N, size_t M> Matrix<T, N, M>::Matrix(const T & initial_value) {
+    for (size_t i {0}; i < data_.size(); ++i) {
+        data_[i].fill(initial_value);
+    }
+}
+
+template <typename T, size_t N, size_t M> T& Matrix<T, N, M>::at(const size_t n, const size_t m) {
+    if ((n >= N) || (m >= M)) {
+        throw std::out_of_range {"Index out of range"};
+    }
+    return data_[n][m];
+}
+
+template <typename T, size_t N, size_t M> const T& Matrix<T, N, M>::at(const size_t n, const size_t m) const {
+    if ((n >= N) || (m >= M)) {
+        throw std::out_of_range {"Index out of range"};
+    }
+    return data_[n][m];
+}
+
+template <typename T, size_t N, size_t M> const std::array<T, M>& Matrix<T, N, M>::operator[] (const size_t pos) const {
+    return data_[pos];
+}
+
+template <typename T, size_t N, size_t M> std::array<T, M>& Matrix<T, N, M>::operator[] (const size_t pos) {
+    return data_[pos];
+}
+```
+
+```cpp
+Matrix<int, 10, 10> my_matrix {0};
+
+my_matrix.at(2, 2) = 5;
+
+std::cout << my_matrix[2][2] << std::endl;
+```
+
+## Lab exercises
+
+### 1. Finish CSV and Fixed-width input reader specialisations from last week
+
+The recognised format for CSV is documented in [RFC4180](https://www.ietf.org/rfc/rfc4180.txt). Note you will need to cope with quoted fields (which can include newlines-within-quotes).
+
+Sometimes data is provided in a fixed-width data format, where each field is a set number of characters rather than being seperated by a delimiter. Write a new sub-class that can read such a file with the following format (we will generalise it next week):
+
++ 8 characters for a date (YYYYMMDD)
++ 3 character for the stock symbol
++ 8 characters for the current value - first 4 are pre-decimal point, next 4 are after (i.e. field is price x 10000)
+
+For example:
+
+```text
+20200101UOB00012345
+20200101GOG01000056
+20200102LAH00000005
+```
+
+### 2. Add template for GetNextField in the base class that will return different types on request - default to `std::string` but provide `int` and `double` specialisations
+
+This could also be (and possibly would be better) done by returning a custom 'InputField' type from GetNextField that internally has conversion operators to `std::string`, `int`, `double` etc.
+
+### 3. (challenge) Add template for Fixed-width reader that specifies the width of each field at compile time
+
+You will need to read about [template parameter packs](https://en.cppreference.com/w/cpp/language/parameter_pack) and use the list of sizes to initialise a data-structure (you can use `sizeof...()` to get the number of elements in the pack - a `const std::array` of that size would be a good structure to use to hold the field widths).
