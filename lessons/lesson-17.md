@@ -68,7 +68,7 @@ std::vector<std::common_type_t<Ts...>> make_vector(Ts... args) {
 ```
 
 ```cpp
-auto my_vector = make_vector(1, 2, 3, 4, 5, 6);
+auto my_vector {make_vector(1, 2, 3, 4, 5, 6)};
 ```
 
 The ability to expand like this allows a very convenient use of recursion techniques to process each parameter (if that is what is required) rather than counting and looping:
@@ -114,7 +114,7 @@ To do this, we simply use an argument of type `std::initializer_list` (from the 
 template<typename T>
 void MyFunction(std::initializer_list<T> args) {
     for (const auto& arg: args) {
-        std::cout << "Argument: " << arg << std::end;
+        std::cout << "Argument: " << arg << std::endl;
     }
 }
 ```
@@ -214,7 +214,8 @@ Last week we covered templates and this week we've looked at variable length par
 
 As the number of fields can be determined at compile time, we can use  a `const std::array` of that size to efficiently hold this information.
 
-### 3. Write a factory to create the appropriate InputReader from a delimited-file filename
+### 3. Write a factory to create the appropriate InputReader from a delimited-file file-name
 
 We can select the right one based on the file extension.
 
+### 4. Add an overload to this factory method to create a fixed-width InputReader if passed the widths of the fields.
