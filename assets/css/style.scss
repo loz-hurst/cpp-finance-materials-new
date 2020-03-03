@@ -31,6 +31,14 @@
   content: "\1f3f0";
 }
 
+.callout.hint {
+  border-left-color: deeppink;
+}
+.callout.hint::before {
+  content: "\2728";
+}
+
+
 .callout.philosophy {
   border-left-color: navy;
 }

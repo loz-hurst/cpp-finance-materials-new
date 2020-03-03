@@ -16,18 +16,6 @@ Last lesson we looked at Templates, how to define them for functions and classes
 
 This week, in the final lesson on core contemporary C++ topics, we will look at design patterns.
 
-
-(see Term 2 Week 10 in old course)
-
-https://en.wikibooks.org/wiki/C%2B%2B_Programming/Code/Design_Patterns
-
-https://en.cppreference.com/w/cpp/numeric/valarray / https://en.wikipedia.org/wiki/Expression_templates
-
-+ parameter packs/variable length argument lists
-
-+ Add oprator>> to our input reader
-
-
 ## Variable length arguments
 
 So far functions have taken a fixed number of arguments, but sometimes we want to take a variable number.  We will look at two ways:
@@ -70,7 +58,7 @@ void MyFunction(Ts... args) {
 }
 ```
 
-And we can expand the pack (in certain places) using the name of the pack followed by an elipisis, e.g. `args...`.  One place where this can happen is in an initialiser list:
+And we can expand the pack (in certain places) using the name of the pack followed by an ellipsis, e.g. `args...`.  One place where this can happen is in an initialiser list:
 
 ```cpp
 template<typename ...Ts>
@@ -110,40 +98,123 @@ Note that the types within a parameter pack can be different, and they will reta
 There is a lot more to [parameter packs](https://en.cppreference.com/w/cpp/language/parameter_pack) but this is enough to use them for variable length argument lists.
 {: .callout .philosophy}
 
-### Passing initaliser lists
+### Passing initialiser lists
+
+Another approach to passing variable length argument lists is to pass an initialiser list as a single argument.  This is synonymous with passing a structure, like a vector, but an initialiser list is specifically intended for passing arguments (typically to a constructor) so is more intuitive and there is less overhead from the structure.
+
+Like a vector, everything in an initialiser list type object <strong>must</strong> be the same type - note this is different to using uniform initialisation (which uses the same braced-syntax) where the types can be different provided they match a constructor's argument types.
+{: .callout .beware}
+
+The initialiser list provides const references to the original object - you cannot pass and modify arguments using this approach but no copy is made either so it is very efficient.
+{: .callout .technical}
+
+To do this, we simply use an argument of type `std::initializer_list` (from the `initializer_list` header) and pass the arguments in braces:
+
+```cpp
+template<typename T>
+void MyFunction(std::initializer_list<T> args) {
+    for (const auto& arg: args) {
+        std::cout << "Argument: " << arg << std::end;
+    }
+}
+```
+
+```cpp
+MyFunction({"Hello", "World"});
+MyFucntion({1, 2, 3, 4});
+```
+
+If we wanted to restrict the type passed we could remove the template and replace `<T>` with the type, e.g. `std::initializer_list<int>` or `std::initializer_list<std::string>`.
+{: .callout .hint}
 
 ## Common design patterns
 
+Design patterns are a huge topic, we could probably do an entire 20-credit module just on this.
+
+Broadly speaking, by "design patterns" we mean "ways of structuring your code, your objects and the interactions between them".  Regardless of how you have done it to date, there is probably a recognised name for the approach you have used.
+
+In 1994 a book, called Design Patterns: Elements of Reusable Object-Oriented Software, described 23 "classic" patterns for software design in an effort to provide a handbook for structuring software.  It [has been cited](https://en.wikibooks.org/wiki/C%2B%2B_Programming/Code/Design_Patterns) as the trigger for the concept of "design patterns" being formally recognised in software engineering.
+
+At the time of writing, Wiki Books has [a page describing 26 different design patterns](https://en.wikibooks.org/wiki/C%2B%2B_Programming/Code/Design_Patterns) many of which you may recognise from your journey on this course.  Some patterns are more common in certain languages than others, for example the observer pattern is common in JavaScript (and other event-driven) applications.
+
+We will look at two specific patterns that we have already mentioned on the course, the singleton and factory pattern.
+
 ### Singleton
+
+The singleton pattern ensures that only one instance of a class ever exists.
+
+An example where this would be useful could be to obtain a licence key from a licence file or server for our application.  This might require some significant work, to open and read the licence file or communicate to acquire a licence from a server, but there after the application can re-use the licence until it ends.
+
+To do this, we define a class with a private constructor (so it can only be instantiated by itself or a friend) and either a static member function or a friend function to obtain the instance.
+
+```cpp
+class MySingleton {
+public:
+    // Any accessor methods
+    static MySingleton& GetInstance() {
+        static MySingleton my_instance; // Create an instance
+        return my_instance;
+    }
+private:
+    MySingleton() {} // Default constructor is private
+    MySingleton(const MySingleton& other) = delete; // Do not allow the instance to be copied
+    MySingleton(const MySingleton&& other) = delete; // Do not allow the instance to be moved
+    MySingleton& operator=(const StringSingleton &rhs) const = delete; //disallow copy-assignment operator
+    MySingleton& operator=(const StringSingleton &&rhs) const = delete; //disallow move-assignment operator
+    ~MySingleton() {} // Private destructor controls who can destroy the object
+    // Any instance data/variables
+};
+```
+
+If we wanted to re-validate a licence periodically, this could also now be trivially added by adding a variable to hold the time the licence needs re-checking and see if it has passed each time an instance is requested or in an appropriate accessor method.
+{: .callout .hint}
+
+Other examples where this is particularly useful are:
+
++ Application wide configuration (load once on first access, use everywhere after that).
++ Shared-memory programming (typically threading) where locks are required (a single lock object than needs to be independently acquired and released by different parts of the program running at the same time).
 
 ### Factory
 
+The factory pattern is where direct creation of objects is prevented and instead consumers are forced to use a specific method, typically static member or friend, to construct the object and provide it to them.
 
+It is called the <em>factory pattern</em> and the method that makes the objects a <em>factory method</em> because it "manufactures" the objects and produces them ready for use.
+{: .callout .terminology}
+
+Most typically the exact type of the object being constructed is only known at runtime and the factory will apply some logic to work out which specific instance to create.
+
+```cpp
+/*
+ * Constructs an option of the specified type and returns an Option reference.
+ */
+Option& MyOptionFactory(OptionType type, OptionData initial_data) {
+    switch(type) {
+        case OptionType::EurCall:
+            return EuropeanCall {initial_data};
+        case OptionType::EurPut:
+            return EuropeanPut {initial_data};
+        case OptionType::AsianCall:
+            return AsianCall {initial_data};
+        // etc.
+    }
+}
+```
+
+It is very useful for abstracting this sort of logic out of your main code, and helps to make sure that you stick to the generic 'Option' interface which should work with any type of option (provided you have structured your class hierarchy well).
 
 ## Lab exercises
 
-### 1. Finish CSV and Fixed-width input reader specialisations from last week
-
-The recognised format for CSV is documented in [RFC4180](https://www.ietf.org/rfc/rfc4180.txt). Note you will need to cope with quoted fields (which can include newlines-within-quotes).
-
-Sometimes data is provided in a fixed-width data format, where each field is a set number of characters rather than being seperated by a delimiter. Write a new sub-class that can read such a file with the following format (we will generalise it next week):
-
-+ 8 characters for a date (YYYYMMDD)
-+ 3 character for the stock symbol
-+ 8 characters for the current value - first 4 are pre-decimal point, next 4 are after (i.e. field is price x 10000)
-
-For example:
-
-```text
-20200101UOB00012345
-20200101GOG01000056
-20200102LAH00000005
-```
-
-### 2. Add template for GetNextField in the base class that will return different types on request - default to `std::string` but provide `int` and `double` specialisations
+### 1. Add template for GetNextField in the base class that will return different types on request - default to `std::string` but provide `int` and `double` specialisations
 
 This could also be (and possibly would be better) done by returning a custom 'InputField' type from GetNextField that internally has conversion operators to `std::string`, `int`, `double` etc.
 
-### 3. (challenge) Add template for Fixed-width reader that specifies the width of each field at compile time
+### 2. Add template for Fixed-width reader that specifies the width of each field at compile time
 
-You will need to read about [template parameter packs](https://en.cppreference.com/w/cpp/language/parameter_pack) and use the list of sizes to initialise a data-structure (you can use `sizeof...()` to get the number of elements in the pack - a `const std::array` of that size would be a good structure to use to hold the field widths).
+Last week we covered templates and this week we've looked at variable length parameter lists, so now we can write a template version of fixed-width reader that takes a variable list of template arguments describing the widths of all the fields in the file (and hence the number of fields).
+
+As the number of fields can be determined at compile time, we can use  a `const std::array` of that size to efficiently hold this information.
+
+### 3. Write a factory to create the appropriate InputReader from a delimited-file filename
+
+We can select the right one based on the file extension.
+
