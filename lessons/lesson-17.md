@@ -25,7 +25,10 @@ So far functions have taken a fixed number of arguments, but sometimes we want t
 
 A third way, called variadic functions, from C we will discuss in the final lesson.
 
-Variable numbers of arguments with templates are called <em>parameter packs</em>
+Variable numbers of arguments with templates are called <em>parameter packs</em>.
+{: .callout .terminology}
+
+Templates with parameter packs are called <em>variadic templates</em>.
 {: .callout .terminology}
 
 Generally, variable length argument lists have been discouraged in C++.  This could be for a range of reasons but the two obvious ones are that they are a pain to implement and there is a performance hit from processing arguments at runtime compared to using overloading to resolve the function call at compile time.  Using templates addresses both of these issues.
