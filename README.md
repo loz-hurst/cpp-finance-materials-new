@@ -64,7 +64,7 @@ This file is part of C++ for Finance.
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <https://www.gnu.org/licenses/>.
+    along with C++ for Finance.  If not, see <https://www.gnu.org/licenses/>.
 
 See the file LICENCE in the original source code repository for the
 full licence.
