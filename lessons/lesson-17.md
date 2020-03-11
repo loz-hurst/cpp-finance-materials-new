@@ -207,9 +207,9 @@ It is very useful for abstracting this sort of logic out of your main code, and 
 
 ## Lab exercises
 
-### 1. Add template for GetNextField in the base class that will return different types on request - default to `std::string` but provide `int` and `double` specialisations
+### 1. Add new InputField object as return type for GetNextField in the base class.  It will need to know how to convert itself (via `operator`) to different types on request - by default we should be treating it as a`std::string` but provide `int` and `double` conversions.
 
-This could also be (and possibly would be better) done by returning a custom 'InputField' type from GetNextField that internally has conversion operators to `std::string`, `int`, `double` etc.
+It will also need a stream insertion operator adding so it can continue to be printed.
 
 ### 2. Add template for Fixed-width reader that specifies the width of each field at compile time
 
