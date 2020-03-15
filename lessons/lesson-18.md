@@ -25,7 +25,7 @@ Firstly we need the code we have been developing over the last few weeks.  Hopef
 
 Within CLion, right-click on the project browser to create a new directory:
 
-![Create a directory in CLion](/assets/images/CLion-create-directory.png)
+![Create a directory in CLion](../assets/images/CLion-create-directory.png)
 
 Call the directory something sensible, although the actual name is not important for the code.  I chose 'InputReader'.
 
