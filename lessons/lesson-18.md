@@ -169,6 +169,7 @@ Using the list of common features above as a guide, create the base class's decl
 
 <details>
     <summary>Example solution</summary>
+
 ```cpp
 // Base class for Monte-Carlo[MC] methods
 class MonteCarlo {
@@ -272,7 +273,6 @@ void MCPlain::runSample() {
     ++samples_;
 }
 ```
-
 </details>
 
 
@@ -327,7 +327,6 @@ double MCPlain::getError() {
     return discount_*std::sqrt(error_accumulator_/samples_ - result*result)/samples_;
 }
 ```
-
 </details>
 
 ### The Ln_S MC class
@@ -380,7 +379,6 @@ double PathMC::getError() {
     return discount_*std::sqrt(error_accumulator_/samples_ - result*result)/samples_;
 }
 ```
-
 </details>
 
 Now change the Plain to inherit from PathMC and delegate construction to its constructor.  The data members and getResult/getError members in Plain should be deleted (they are in the intermediate base class now).
@@ -430,7 +428,6 @@ void Ln_S::runSample() {
     ++samples_;
 }
 ```
-
 </details>
 
 ### The control variate class
@@ -534,7 +531,6 @@ double CV::getCorrelation() const {
     );
 }
 ```
-
 </details>
 
 ## OO Important sampling[IS]
@@ -631,7 +627,6 @@ void ISPlain::runSample() {
     ++samples_;
 }
 ```
-
 </details>
 
 ### The benchmark IS code with IS
@@ -672,7 +667,6 @@ void ISIS::runSample() {
     ++samples_;
 }
 ```
-
 </details>
 
 ### OTM examples
