@@ -17,7 +17,7 @@ We will be doing two things:
 1. We will use CMake to split out the file-reading code we have been creating recently into its own library.
 2. Create a new object-orientated library for the Monte Carlo methods we saw before (based on code from week 7)
 
-In most places there are example solutions that you need to click on to show - please try and solve the problem yourself before looking at the answers, you will learn more from doing it yourself than just reading the solution.
+In most places there are example solutions - please try and solve the problem yourself before looking at the answers (I know this is difficult due to the delivery medium), you will learn more from doing it yourself than just reading the solution.
 
 ## Turning our file reading code into a library
 
@@ -167,9 +167,6 @@ Next, we should add the common data members, methods and a constructor to the Mo
 
 Using the list of common features above as a guide, create the base class's declaration in a header (hpp) file and definition of the non-abstract functions in a code (cpp) file.
 
-<details>
-    <summary>Example solution</summary>
-
 ```cpp
 // Base class for Monte-Carlo[MC] methods
 class MonteCarlo {
@@ -211,14 +208,10 @@ void MonteCarlo::reset() {
     samples_ = 0;
 }
 ```
-</details>
 
 ### The Plain MC class
 
 Now we have a skeleton for our base MC class, we can implement the first concrete class, the plain MC method (MonteCarlo::Plain in the week 7 code).  This method calculates the size of each step, drift, sigma x sqrt(step_size) and discount to use several times during the path run - so we will want to do this in the constructor so it happens once.  The constructor for this class will also need to take the number of steps to calculate for each path and the BSData (which it will pass to the super-class's constructor).
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 // Plain MC method
@@ -273,8 +266,6 @@ void MCPlain::runSample() {
     ++samples_;
 }
 ```
-</details>
-
 
 Note that this code will require one of the Random utility from the week 7 code.  We can add that utility name-space to our MonteCarlo library as it is:
 
@@ -314,9 +305,6 @@ namespace Random {
 
 Finally, we just need to add the implementations of getResult and getError for this method.
 
-<details>
-    <summary>Example solution</summary>
-
 ```cpp
 double MCPlain::getResult() {
     return discount_*accumulator_/samples_;
@@ -327,7 +315,6 @@ double MCPlain::getError() {
     return discount_*std::sqrt(error_accumulator_/samples_ - result*result)/samples_;
 }
 ```
-</details>
 
 ### The Ln_S MC class
 
@@ -338,9 +325,6 @@ Now we have done the plain MC class, let's have a look at the Ln_S version (whic
 At this point we see that much of the initial data values are the same (as they are for the control variate version), and the final calculation for the result and error.  Rather than duplicate the code (again), we should create an intermediate class for these path simulations.
 
 The new class will be abstract (by not implementing runSample) but the common data members and initialisation can be moved up to it, along with the result and error methods.  This new class will inherit from MonteCarlo and MCPlain & Ln_S classes from this new class (creating a hierarchy where MonteCarlo &rarr; new intermediate class &rarr; (MCPlain, Ln_S)).
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 class PathMC : public MonteCarlo {
@@ -379,16 +363,12 @@ double PathMC::getError() {
     return discount_*std::sqrt(error_accumulator_/samples_ - result*result)/samples_;
 }
 ```
-</details>
 
 Now change the Plain to inherit from PathMC and delegate construction to its constructor.  The data members and getResult/getError members in Plain should be deleted (they are in the intermediate base class now).
 
 #### The Ln_S class
 
 The Ln_S class needs an additional data member, the ln(S_0), as that will be used for each sample.  Apart from that, we just need the new runSample method.
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 class Ln_S : public PathMC {
@@ -428,14 +408,10 @@ void Ln_S::runSample() {
     ++samples_;
 }
 ```
-</details>
 
 ### The control variate class
 
 The final path based class is the control variate version.  This version requires that we keep the values for all of the samples and differ the final accumulator calculation until just before the result is calculated, so we will need to override getResult to do that before calling the underlying version.
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 class CV : public PathMC {
@@ -531,7 +507,6 @@ double CV::getCorrelation() const {
     );
 }
 ```
-</details>
 
 ## OO Important sampling[IS]
 
@@ -540,9 +515,6 @@ Now we have done the straight-forward Monte Carlo methods, we can move on to doi
 ### The IS intermediate class
 
 Since the multiple runs and averaging is going to be done in the benchmark script, the error can be rewritten as simply the difference between the observed (sampled) values and the (in all of our benchmark cases, known absolutely) expected value.  Our class will therefore need to store the expected value to use to calculate the error.  The result code, in all of the implemented cases, is simply the mean of the samples.
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 // Base class for all Monte Carlo methods
@@ -568,14 +540,9 @@ double IS::getError() {
 }
 ```
 
-</details>
-
 ### The Benchmark IS classes
 
 These share some of the same data members, so we again create an intermediate class to help reduce duplication.  I decided to call the intermediate class ISSimple (as they are the simple IS methods, for benchmark purposes).  Write your class to include all of the common variables from the original IS_Benchmark methods.
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 // Base class for the two simple importance sampling methods
@@ -596,12 +563,8 @@ public:
         : IS(quartile_over_, data) {}
 };
 ```
-</details>
 
 Now we can implement the plain class, using the logic from the inner loop of the original code for the sample calculation.
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 /*
@@ -627,14 +590,10 @@ void ISPlain::runSample() {
     ++samples_;
 }
 ```
-</details>
 
 ### The benchmark IS code with IS
 
 Now that the plain method has been written, you can create the IS version.  This uses a weighted selection to select samples skewed towards the 99th quartile.  Again, most of the work has been done in the base classes so we just need to reimplement the actual sampling code from the IS code for the sample.
-
-<details>
-    <summary>Example solution</summary>
 
 ```cpp
 /*
@@ -667,7 +626,6 @@ void ISIS::runSample() {
     ++samples_;
 }
 ```
-</details>
 
 ### OTM examples
 
