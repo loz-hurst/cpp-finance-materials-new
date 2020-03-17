@@ -10,18 +10,20 @@ title: Lesson 18 - Applying OOP to Monte-Carlo
 
 ## Today
 
-There's no supporting Jupyter Notebook today, instead we will be applying the techniques covered since to the Monte Carlo code we looked at in week 7 of term 1.
+There's no supporting Jupyter Notebook today, instead we will be applying the techniques covered since we started looking at object-orientation to the Monte Carlo code we looked at in week 7 of term 1.
 
-We will break this down step-by-step:
+We will be doing two things:
 
 1. We will use CMake to split out the file-reading code we have been creating recently into its own library.
 2. Create a new object-orientated library for the Monte Carlo methods we saw before (based on code from week 7)
 
-### Turning our file reading code into a library
+In most places there are example solutions that you need to click on to show - please try and solve the problem yourself before looking at the answers, you will learn more from doing it yourself than just reading the solution.
+
+## Turning our file reading code into a library
 
 Firstly we need the code we have been developing over the last few weeks.  Hopefully you have your own, if not get a copy from https://github.com/loz-hurst/cpp-finance-materials-new-code
 
-#### Move the code for the library into the same directory
+### Move the code for the library into the same directory
 
 Within CLion, right-click on the project browser to create a new directory:
 
@@ -41,7 +43,7 @@ Move the files related to the InputReader code into that directory.  From the mo
 * TSVInputReader.cpp
 * TSVInputReader.hpp
 
-#### Build the code as a self-contained library
+### Build the code as a self-contained library
 
 We need to add a CMakeLists.txt file to our new directory, which will tell the compiler how to build it as a self-contained library.
 
@@ -82,7 +84,7 @@ target_include_directories(InputReader
 The PUBLIC here means "anything that links to InputReader needs to have this include directory added".  If we were adding an include directory that only InputReader needed internally we would use PRIVATE instead.
 {: .callout .terminology}
 
-#### Update our main CMake configuration to use the library
+### Update our main CMake configuration to use the library
 
 Finally, we now update the project's main CMakeLists.txt file to use this library.  To do this, we need to tell CMake to use the library's CMakeLists.txt by putting the 'add_subdirectory' command into it (remember to use the actual name of the directory you put the InputReader code in):
 
@@ -105,11 +107,11 @@ target_link_libraries(MyProject PRIVATE InputReader)
 The 'PRIVATE' here says "MyProject needs to be linked to InputReader, but anything that links to MyProject (once it's built) does not need to separately link to InputReader".
 {: .callout .terminology}
 
-### OO Monte Carlo
+## OO Monte Carlo
 
 This is going to be based on the code for week 7's exercises, which is available on-line at https://github.com/loz-hurst/cpp-finance-week7-code (this includes the exercise solutions, we're just going to work on the original version).
 
-#### Create a Monte Carlo library
+### Create a Monte Carlo library
 
 Firstly, create a new directory and CMakeLists file for a new Monte Carlo library.  Use the CMakeLists.txt from the input reader we just wrote as a template, remembering to change all the names from InputReader to something appropriate (e.g. MonteCarlo) and remove the InputReader source files from the MonteCarlo CMakeLists.txt.
 
@@ -130,7 +132,7 @@ class MonteCarlo {
 You do need to create a header and code (.cpp) file for the class, or CMake will become confused since there's no code to build so it cannot figure out what programming language the project is using.
 {: .callout .beware}
 
-#### Start with a skeleton base class
+### Start with a skeleton base class
 
 The Monte Carlo[MC] codes we looked at in week 7 have a number of things in common:
 
@@ -161,14 +163,18 @@ struct BSData {
 };
 ```
 
-Next, we should add the common data members, methods and a constructor to the MonteCarlo base class.  Data members should be protected (private to within this class and descendents) and their names end with an underscore, the constructor should just take a BSData struct and store it in a data member and our methods, which we identified above, should all be virtual and abstract (as their implementations will vary in each specialised sub-class).
+Next, we should add the common data members, methods and a constructor to the MonteCarlo base class.  Data members should be protected (private to within this class and descendent) and their names end with an underscore, the constructor should just take a BSData struct and store it in a data member and our methods, which we identified above, should all be virtual and abstract (as their implementations will vary in each specialised sub-class).
 
+Using the list of common features above as a guide, create the base class's declaration in a header (hpp) file and definition of the non-abstract functions in a code (cpp) file.
+
+<details>
+    <summary>Example solution</summary>
 ```cpp
 // Base class for Monte-Carlo[MC] methods
 class MonteCarlo {
 protected:
     const BSData bs_data_; // Black-Scholes data for the method
-    double accumultor_; // Accumulator for the result
+    double accumulator_; // Accumulator for the result
     double error_accumulator_; // Accumulator for the error
     unsigned int samples_; // How many samples have been computed
 public:
@@ -189,7 +195,7 @@ public:
 
 ```cpp
 MonteCarlo::MonteCarlo(const BSData& data)
-: bs_data_{data}, accumultor_{0}, error_accumulator_{0}, samples_{0}
+: bs_data_{data}, accumulator_{0}, error_accumulator_{0}, samples_{0}
 {}
 
 void MonteCarlo::runSamples(const unsigned long n) {
@@ -199,19 +205,23 @@ void MonteCarlo::runSamples(const unsigned long n) {
 }
 
 void MonteCarlo::reset() {
-    accumultor_ = 0;
+    accumulator_ = 0;
     error_accumulator_ = 0;
     samples_ = 0;
 }
 ```
+</details>
 
-#### The Plain MC class
+### The Plain MC class
 
-Now we have a skeleton for our base MC class, we can implement the first concrete class, the plain MC method (MonteCarlo::Plain in the week 7 code).  This method calculates the size of each step, drift, sigma x sqrt(step_size) and discount to use several times during the path run - so we will want to do this in the constructor so it happens once.  The constructor for this class will also need to take the number of steps to calculate for each path and the BSData (which it will pass to the super-class's constructor):
+Now we have a skeleton for our base MC class, we can implement the first concrete class, the plain MC method (MonteCarlo::Plain in the week 7 code).  This method calculates the size of each step, drift, sigma x sqrt(step_size) and discount to use several times during the path run - so we will want to do this in the constructor so it happens once.  The constructor for this class will also need to take the number of steps to calculate for each path and the BSData (which it will pass to the super-class's constructor).
+
+<details>
+    <summary>Example solution</summary>
 
 ```cpp
 // Plain MC method
-class Plain : public MonteCarlo {
+class MCPlain : public MonteCarlo {
 private:
     const unsigned int steps_; // How many steps will this method simulate
     const double delta_t_; // Size of each step
@@ -222,7 +232,7 @@ private:
     const double discount_; // Discount: e^(-rT)
 public:
     // Constructor - takes number of steps for the path and the underlying data
-    Plain(const unsigned int steps, const BSData& data);
+    MCPlain(const unsigned int steps, const BSData& data);
     void runSample() override;
     double getResult() override;
     double getError() override;
@@ -230,10 +240,10 @@ public:
 };
 ```
 
-This takes care of all of the code up to the loop that starts calculating the paths.  Each path is one sample, so that is the logic that needs to go into runSample:
+Each path is one sample, so that is the logic that needs to go into runSample:
 
 ```cpp
-Plain::Plain(const unsigned int steps, const BSData& data)
+MCPlain::MCPlain(const unsigned int steps, const BSData& data)
     : MonteCarlo(data),
       steps_{steps},
       delta_t_ {data.maturity/steps},
@@ -242,7 +252,7 @@ Plain::Plain(const unsigned int steps, const BSData& data)
       discount_ {std::exp(-data.rate * data.maturity)}
 {}
 
-void Plain::runSample() {
+void MCPlain::runSample() {
     // Start each path from S_0
     double S {bs_data_.s_0};
 
@@ -257,13 +267,16 @@ void Plain::runSample() {
     // Calculate the final payoff for this path
     const double payoff {std::max(S-bs_data_.strike, 0.0)};
 
-    accumultor_ += payoff;
+    accumulator_ += payoff;
     error_accumulator_ += payoff*payoff; // Accumulate the squares to calculate the error
     ++samples_;
 }
 ```
 
-Note that this code requires one of the Random utility from the week 7 code.  We can add that utility name-space to our MonteCarlo library as it is:
+</details>
+
+
+Note that this code will require one of the Random utility from the week 7 code.  We can add that utility name-space to our MonteCarlo library as it is:
 
 ```cpp
 namespace Random {
@@ -299,29 +312,36 @@ namespace Random {
 }
 ```
 
-Finally, we just need to add the implementations of getResult and getError for this method:
+Finally, we just need to add the implementations of getResult and getError for this method.
+
+<details>
+    <summary>Example solution</summary>
 
 ```cpp
-double Plain::getResult() {
-    return discount_*accumultor_/samples_;
+double MCPlain::getResult() {
+    return discount_*accumulator_/samples_;
 }
 
-double Plain::getError() {
+double MCPlain::getError() {
     const double result = getResult();
     return discount_*std::sqrt(error_accumulator_/samples_ - result*result)/samples_;
 }
 ```
 
-#### The Ln_S MC class
+</details>
 
-Now we have done the Plain MC class, let's have a look at the Ln_S version (which differs calculating the exponent until the end).
+### The Ln_S MC class
 
+Now we have done the plain MC class, let's have a look at the Ln_S version (which defers calculating the exponent until the end).
 
-##### Intermediate class
+#### Intermediate class
 
 At this point we see that much of the initial data values are the same (as they are for the control variate version), and the final calculation for the result and error.  Rather than duplicate the code (again), we should create an intermediate class for these path simulations.
 
-The new class will be abstract (by not implementing runSample) but the common data members and initialisation can be moved up to it, along with the result and error methods.  This new class will inherit from MonteCarlo and the Plain and new Ln_S class from it.
+The new class will be abstract (by not implementing runSample) but the common data members and initialisation can be moved up to it, along with the result and error methods.  This new class will inherit from MonteCarlo and MCPlain & Ln_S classes from this new class (creating a hierarchy where MonteCarlo &rarr; new intermediate class &rarr; (MCPlain, Ln_S)).
+
+<details>
+    <summary>Example solution</summary>
 
 ```cpp
 class PathMC : public MonteCarlo {
@@ -352,7 +372,7 @@ PathMC::PathMC(const unsigned int steps, const BSData& data)
 {}
 
 double PathMC::getResult() {
-    return discount_*accumultor_/samples_;
+    return discount_*accumulator_/samples_;
 }
 
 double PathMC::getError() {
@@ -361,11 +381,16 @@ double PathMC::getError() {
 }
 ```
 
+</details>
+
 Now change the Plain to inherit from PathMC and delegate construction to its constructor.  The data members and getResult/getError members in Plain should be deleted (they are in the intermediate base class now).
 
-##### The Ln_S class
+#### The Ln_S class
 
 The Ln_S class needs an additional data member, the ln(S_0), as that will be used for each sample.  Apart from that, we just need the new runSample method.
+
+<details>
+    <summary>Example solution</summary>
 
 ```cpp
 class Ln_S : public PathMC {
@@ -400,15 +425,20 @@ void Ln_S::runSample() {
      */
     const double payoff {std::max(std::exp(ln_s)-bs_data_.strike, 0.0)};
 
-    accumultor_ += payoff;
+    accumulator_ += payoff;
     error_accumulator_ += payoff*payoff; // Accumulate the squares to calculate the error
     ++samples_;
 }
 ```
 
-#### The control variate class
+</details>
 
-The final path based class is the control variate version.  This version requires that we keep the values for all of the samples and differ the final accumulator calculation until just before the result is calculated, so we will need to do override getResult to do that before calling the underlying version.
+### The control variate class
+
+The final path based class is the control variate version.  This version requires that we keep the values for all of the samples and differ the final accumulator calculation until just before the result is calculated, so we will need to override getResult to do that before calling the underlying version.
+
+<details>
+    <summary>Example solution</summary>
 
 ```cpp
 class CV : public PathMC {
@@ -467,12 +497,12 @@ void CV::runSample() {
 
 double CV::getResult() {
     // Reset from any previous result calculation
-    accumultor_ = 0;
+    accumulator_ = 0;
     error_accumulator_ = 0;
     const double b {beta()};
     for (unsigned int i {0}; samples_ > i; ++i) {
         const double corrected_payoff {payoffs_.at(i) - b*cvs_.at(i)};
-        accumultor_ += corrected_payoff;
+        accumulator_ += corrected_payoff;
         error_accumulator_ += corrected_payoff*corrected_payoff;
     }
 
@@ -505,5 +535,151 @@ double CV::getCorrelation() const {
 }
 ```
 
+</details>
 
+## OO Important sampling[IS]
+
+Now we have done the straight-forward Monte Carlo methods, we can move on to doing the same with the importance-sampling models.  These look slightly different because the benchmarking code (to repeat and then average the same number of samples repeatedly) was mixed into the functions - our OO implementation should just implement the sampling code and we can create a separate benchmarking function (using polymorphism) to do the benchmarks.
+
+### The IS intermediate class
+
+Since the multiple runs and averaging is going to be done in the benchmark script, the error can be rewritten as simply the difference between the observed (sampled) values and the (in all of our benchmark cases, known absolutely) expected value.  Our class will therefore need to store the expected value to use to calculate the error.  The result code, in all of the implemented cases, is simply the mean of the samples.
+
+<details>
+    <summary>Example solution</summary>
+
+```cpp
+// Base class for all Monte Carlo methods
+class IS : public MonteCarlo {
+private:
+    const double expected_value_; // For calculating the error
+public:
+    // Constructor - stores the expected value and delegates data to base
+    IS(const double expected_value, const BSData & data)
+        : MonteCarlo(data), expected_value_{expected_value} { }
+    virtual double getResult() override;
+    virtual double getError() override;
+}
+```
+
+```cpp
+double IS::getResult() {
+    return accumulator_ / samples_;
+}
+
+double IS::getError() {
+    return getResult()-expected_value_;
+}
+```
+
+</details>
+
+### The Benchmark IS classes
+
+These share some of the same data members, so we again create an intermediate class to help reduce duplication.  I decided to call the intermediate class ISSimple (as they are the simple IS methods, for benchmark purposes).  Write your class to include all of the common variables from the original IS_Benchmark methods.
+
+<details>
+    <summary>Example solution</summary>
+
+```cpp
+// Base class for the two simple importance sampling methods
+class ISSimple : public IS {
+protected:
+    // Can initialise here only because they are const members and we know the value
+    const double quartile_ {0.99}; // Nintey-ninth quartile.
+    // Inverse of quartile - non-trivial to calculate, so looked up
+    const double inv_quartile_ {2.3463};
+    // proportion that should be over the quartile
+    const double quartile_over_ {1-quartile_};
+public:
+    /*
+     * Constructor stores the expected value, to calculate the error,
+     * and delegates BSData to the base constructor.
+     */
+    ISSimple(const BSData& data)
+        : IS(quartile_over_, data) {}
+};
+```
+</details>
+
+Now we can implement the plain class, using the logic from the inner loop of the original code for the sample calculation.
+
+<details>
+    <summary>Example solution</summary>
+
+```cpp
+/*
+ * Plain IS (benchmark) class - estimates by random sampling the proportion
+ * of the normal distribution in the 99th quartile.
+ */
+class ISPlain : public ISSimple {
+public:
+    // Constructor - delegates to base class contsructor
+    ISPlain(const BSData& data) : ISSimple(data) {}
+    /*
+     * Sample from the normal distribution,
+     * add 1 if in the 99th quartile 0 otherwise.
+     */
+    void runSample() override;
+};
+```
+
+```cpp
+void ISPlain::runSample() {
+    const double x {Random::GetNormalValue()};
+    accumulator_ += (inv_quartile_ <= x ? 1.0 : 0.0);
+    ++samples_;
+}
+```
+
+</details>
+
+### The benchmark IS code with IS
+
+Now that the plain method has been written, you can create the IS version.  This uses a weighted selection to select samples skewed towards the 99th quartile.  Again, most of the work has been done in the base classes so we just need to reimplement the actual sampling code from the IS code for the sample.
+
+<details>
+    <summary>Example solution</summary>
+
+```cpp
+/*
+ * Importance sampling IS (benchmark) class - estimates by skewed-sampling
+ * to find the proportion of the normal distribution in the 99th quartile.
+ */
+class ISIS : public ISSimple {
+public:
+    // Constructor - delegates to base class contsructor
+    ISIS(const BSData& data) : ISSimple(data) {}
+    /*
+     * Sample from the normal distribution, according to a skewed slection.
+     */
+    void runSample() override;
+};
+```
+
+```cpp
+void ISIS::runSample() {
+    // Use sigma and rate for our skewed distribution parameters
+    const double x {bs_data_.sigma*Random::GetNormalValue()+data.rate};
+    if (inv_quartile_ <= x) {
+        // Need to weight the value to fit the new distribution to the old one
+        const double x_minus_mi_div_sig {(x-bs_data_.rate)/bs_data_.sigma};
+        accumulator_ += bs_data_.sigma*std::exp(-0.5*(x*x - x_minus_mi_div_sig*x_minus_mi_div_sig));
+    } else {
+        accumulator_ += 0;
+    }
+
+    ++samples_;
+}
+```
+
+</details>
+
+### OTM examples
+
+You should now feel able to tackle the out-of-the-money examples yourselves.  Remember that you will need to identify the common features of all of them (discount, mu_0 and sigma_0, for example) and put them in a common intermediate class based on IS.  The expected value will be the result of the explicit solution - have a think about how you will implement that one, there are several options available to you.
+
+### Benchmark function
+
+If you want to, you go one step further and write a function that takes any Monte Carlo class as an argument (remember by-reference for polymorphism), a number of samples and a number of times to repeat, then uses a loop to repeatedly run the simulations using that many samples.  Sum the results to find the mean value, the squares of the errors to then calculate the mean-squared error and average how long each takes to run.  For extra information, you might want to record the best/worst and average times of all of the repeats.
 
