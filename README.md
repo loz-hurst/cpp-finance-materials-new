@@ -14,6 +14,16 @@ This a re-design of the delivery of the module, begun in week 14 of the 20-week 
 
 The original 3 hours slot format of 1hr lecture/2hr lab session wasn't working too well for me or the students so I started this as a trial alternative approach.
 
+# Running locally
+
+## Using bundler
+
+Install the pre-requisites with `bundle install`
+
+(You may need to install `zlib1g-dev` on Debian to build some of the native extensions.)
+
+Then run with `bundle exec jekyll serve`
+
 # Licence
 
 ## Content
